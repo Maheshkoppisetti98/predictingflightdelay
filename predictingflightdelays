@@ -1,0 +1,1820 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "mighty-silver",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n",
+      "                                 Dload  Upload   Total   Spent    Left  Speed\n",
+      "\n",
+      "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n",
+      "  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\n",
+      "  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0\n",
+      "  6 1552k    6 97898    0     0  48949      0  0:00:32  0:00:02  0:00:30 40944\n",
+      " 23 1552k   23  367k    0     0   122k      0  0:00:12  0:00:03  0:00:09  113k\n",
+      " 87 1552k   87 1359k    0     0   339k      0  0:00:04  0:00:04 --:--:--  324k\n",
+      "100 1552k  100 1552k    0     0   388k      0  0:00:04  0:00:04 --:--:--  364k\n"
+     ]
+    }
+   ],
+   "source": [
+    "!curl https://topcs.blob.core.windows.net/public/FlightData.csv -o flightdata.csv"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "experienced-roommate",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>YEAR</th>\n",
+       "      <th>QUARTER</th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>UNIQUE_CARRIER</th>\n",
+       "      <th>TAIL_NUM</th>\n",
+       "      <th>FL_NUM</th>\n",
+       "      <th>ORIGIN_AIRPORT_ID</th>\n",
+       "      <th>ORIGIN</th>\n",
+       "      <th>...</th>\n",
+       "      <th>CRS_ARR_TIME</th>\n",
+       "      <th>ARR_TIME</th>\n",
+       "      <th>ARR_DELAY</th>\n",
+       "      <th>ARR_DEL15</th>\n",
+       "      <th>CANCELLED</th>\n",
+       "      <th>DIVERTED</th>\n",
+       "      <th>CRS_ELAPSED_TIME</th>\n",
+       "      <th>ACTUAL_ELAPSED_TIME</th>\n",
+       "      <th>DISTANCE</th>\n",
+       "      <th>Unnamed: 25</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DL</td>\n",
+       "      <td>N836DN</td>\n",
+       "      <td>1399</td>\n",
+       "      <td>10397</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>...</td>\n",
+       "      <td>2143</td>\n",
+       "      <td>2102.0</td>\n",
+       "      <td>-41.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>338.0</td>\n",
+       "      <td>295.0</td>\n",
+       "      <td>2182.0</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DL</td>\n",
+       "      <td>N964DN</td>\n",
+       "      <td>1476</td>\n",
+       "      <td>11433</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>...</td>\n",
+       "      <td>1435</td>\n",
+       "      <td>1439.0</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>110.0</td>\n",
+       "      <td>115.0</td>\n",
+       "      <td>528.0</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DL</td>\n",
+       "      <td>N813DN</td>\n",
+       "      <td>1597</td>\n",
+       "      <td>10397</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>...</td>\n",
+       "      <td>1215</td>\n",
+       "      <td>1142.0</td>\n",
+       "      <td>-33.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>335.0</td>\n",
+       "      <td>300.0</td>\n",
+       "      <td>2182.0</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DL</td>\n",
+       "      <td>N587NW</td>\n",
+       "      <td>1768</td>\n",
+       "      <td>14747</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>...</td>\n",
+       "      <td>1335</td>\n",
+       "      <td>1345.0</td>\n",
+       "      <td>10.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>196.0</td>\n",
+       "      <td>205.0</td>\n",
+       "      <td>1399.0</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DL</td>\n",
+       "      <td>N836DN</td>\n",
+       "      <td>1823</td>\n",
+       "      <td>14747</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>...</td>\n",
+       "      <td>607</td>\n",
+       "      <td>615.0</td>\n",
+       "      <td>8.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>247.0</td>\n",
+       "      <td>259.0</td>\n",
+       "      <td>1927.0</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 26 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   YEAR  QUARTER  MONTH  DAY_OF_MONTH  DAY_OF_WEEK UNIQUE_CARRIER TAIL_NUM  \\\n",
+       "0  2016        1      1             1            5             DL   N836DN   \n",
+       "1  2016        1      1             1            5             DL   N964DN   \n",
+       "2  2016        1      1             1            5             DL   N813DN   \n",
+       "3  2016        1      1             1            5             DL   N587NW   \n",
+       "4  2016        1      1             1            5             DL   N836DN   \n",
+       "\n",
+       "   FL_NUM  ORIGIN_AIRPORT_ID ORIGIN  ...  CRS_ARR_TIME ARR_TIME  ARR_DELAY  \\\n",
+       "0    1399              10397    ATL  ...          2143   2102.0      -41.0   \n",
+       "1    1476              11433    DTW  ...          1435   1439.0        4.0   \n",
+       "2    1597              10397    ATL  ...          1215   1142.0      -33.0   \n",
+       "3    1768              14747    SEA  ...          1335   1345.0       10.0   \n",
+       "4    1823              14747    SEA  ...           607    615.0        8.0   \n",
+       "\n",
+       "   ARR_DEL15  CANCELLED  DIVERTED  CRS_ELAPSED_TIME  ACTUAL_ELAPSED_TIME  \\\n",
+       "0        0.0        0.0       0.0             338.0                295.0   \n",
+       "1        0.0        0.0       0.0             110.0                115.0   \n",
+       "2        0.0        0.0       0.0             335.0                300.0   \n",
+       "3        0.0        0.0       0.0             196.0                205.0   \n",
+       "4        0.0        0.0       0.0             247.0                259.0   \n",
+       "\n",
+       "   DISTANCE  Unnamed: 25  \n",
+       "0    2182.0          NaN  \n",
+       "1     528.0          NaN  \n",
+       "2    2182.0          NaN  \n",
+       "3    1399.0          NaN  \n",
+       "4    1927.0          NaN  \n",
+       "\n",
+       "[5 rows x 26 columns]"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "df=pd.read_csv('flightdata.csv')\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "entire-symphony",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(11231, 26)"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.shape\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "daily-fitness",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Index(['YEAR', 'QUARTER', 'MONTH', 'DAY_OF_MONTH', 'DAY_OF_WEEK',\n",
+       "       'UNIQUE_CARRIER', 'TAIL_NUM', 'FL_NUM', 'ORIGIN_AIRPORT_ID', 'ORIGIN',\n",
+       "       'DEST_AIRPORT_ID', 'DEST', 'CRS_DEP_TIME', 'DEP_TIME', 'DEP_DELAY',\n",
+       "       'DEP_DEL15', 'CRS_ARR_TIME', 'ARR_TIME', 'ARR_DELAY', 'ARR_DEL15',\n",
+       "       'CANCELLED', 'DIVERTED', 'CRS_ELAPSED_TIME', 'ACTUAL_ELAPSED_TIME',\n",
+       "       'DISTANCE', 'Unnamed: 25'],\n",
+       "      dtype='object')"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "intensive-weekend",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().values.any()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "federal-calendar",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "YEAR                       0\n",
+       "QUARTER                    0\n",
+       "MONTH                      0\n",
+       "DAY_OF_MONTH               0\n",
+       "DAY_OF_WEEK                0\n",
+       "UNIQUE_CARRIER             0\n",
+       "TAIL_NUM                   0\n",
+       "FL_NUM                     0\n",
+       "ORIGIN_AIRPORT_ID          0\n",
+       "ORIGIN                     0\n",
+       "DEST_AIRPORT_ID            0\n",
+       "DEST                       0\n",
+       "CRS_DEP_TIME               0\n",
+       "DEP_TIME                 107\n",
+       "DEP_DELAY                107\n",
+       "DEP_DEL15                107\n",
+       "CRS_ARR_TIME               0\n",
+       "ARR_TIME                 115\n",
+       "ARR_DELAY                188\n",
+       "ARR_DEL15                188\n",
+       "CANCELLED                  0\n",
+       "DIVERTED                   0\n",
+       "CRS_ELAPSED_TIME           0\n",
+       "ACTUAL_ELAPSED_TIME      188\n",
+       "DISTANCE                   0\n",
+       "Unnamed: 25            11231\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "linear-baghdad",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df=df.drop('Unnamed: 25',axis=1)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "varied-blake",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "YEAR                     0\n",
+       "QUARTER                  0\n",
+       "MONTH                    0\n",
+       "DAY_OF_MONTH             0\n",
+       "DAY_OF_WEEK              0\n",
+       "UNIQUE_CARRIER           0\n",
+       "TAIL_NUM                 0\n",
+       "FL_NUM                   0\n",
+       "ORIGIN_AIRPORT_ID        0\n",
+       "ORIGIN                   0\n",
+       "DEST_AIRPORT_ID          0\n",
+       "DEST                     0\n",
+       "CRS_DEP_TIME             0\n",
+       "DEP_TIME               107\n",
+       "DEP_DELAY              107\n",
+       "DEP_DEL15              107\n",
+       "CRS_ARR_TIME             0\n",
+       "ARR_TIME               115\n",
+       "ARR_DELAY              188\n",
+       "ARR_DEL15              188\n",
+       "CANCELLED                0\n",
+       "DIVERTED                 0\n",
+       "CRS_ELAPSED_TIME         0\n",
+       "ACTUAL_ELAPSED_TIME    188\n",
+       "DISTANCE                 0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "consolidated-world",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "MONTH             0\n",
+       "DAY_OF_MONTH      0\n",
+       "DAY_OF_WEEK       0\n",
+       "ORIGIN            0\n",
+       "DEST              0\n",
+       "CRS_DEP_TIME      0\n",
+       "ARR_DEL15       188\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "required=df[[\"MONTH\",\"DAY_OF_MONTH\",\"DAY_OF_WEEK\",\"ORIGIN\",\"DEST\",\"CRS_DEP_TIME\",\"ARR_DEL15\"]]\n",
+    "required.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "different-cemetery",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>ORIGIN</th>\n",
+       "      <th>DEST</th>\n",
+       "      <th>CRS_DEP_TIME</th>\n",
+       "      <th>ARR_DEL15</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>1905</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>1345</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>940</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>819</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>2300</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   MONTH  DAY_OF_MONTH  DAY_OF_WEEK ORIGIN DEST  CRS_DEP_TIME  ARR_DEL15\n",
+       "0      1             1            5    ATL  SEA          1905        0.0\n",
+       "1      1             1            5    DTW  MSP          1345        0.0\n",
+       "2      1             1            5    ATL  SEA           940        0.0\n",
+       "3      1             1            5    SEA  MSP           819        0.0\n",
+       "4      1             1            5    SEA  DTW          2300        0.0"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "required[required.isnull().values.any(axis=1)]\n",
+    "required.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "verified-january",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>ORIGIN</th>\n",
+       "      <th>DEST</th>\n",
+       "      <th>CRS_DEP_TIME</th>\n",
+       "      <th>ARR_DEL15</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>177</th>\n",
+       "      <td>1</td>\n",
+       "      <td>9</td>\n",
+       "      <td>6</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>701</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>178</th>\n",
+       "      <td>1</td>\n",
+       "      <td>9</td>\n",
+       "      <td>6</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>JFK</td>\n",
+       "      <td>1527</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>179</th>\n",
+       "      <td>1</td>\n",
+       "      <td>10</td>\n",
+       "      <td>7</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>1348</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>180</th>\n",
+       "      <td>1</td>\n",
+       "      <td>10</td>\n",
+       "      <td>7</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>1540</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>181</th>\n",
+       "      <td>1</td>\n",
+       "      <td>10</td>\n",
+       "      <td>7</td>\n",
+       "      <td>JFK</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>1325</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>182</th>\n",
+       "      <td>1</td>\n",
+       "      <td>10</td>\n",
+       "      <td>7</td>\n",
+       "      <td>JFK</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>610</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>183</th>\n",
+       "      <td>1</td>\n",
+       "      <td>10</td>\n",
+       "      <td>7</td>\n",
+       "      <td>JFK</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>1615</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>184</th>\n",
+       "      <td>1</td>\n",
+       "      <td>10</td>\n",
+       "      <td>7</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>625</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     MONTH  DAY_OF_MONTH  DAY_OF_WEEK ORIGIN DEST  CRS_DEP_TIME  ARR_DEL15\n",
+       "177      1             9            6    MSP  SEA           701        1.0\n",
+       "178      1             9            6    DTW  JFK          1527        0.0\n",
+       "179      1            10            7    MSP  DTW          1348        1.0\n",
+       "180      1            10            7    DTW  MSP          1540        0.0\n",
+       "181      1            10            7    JFK  ATL          1325        0.0\n",
+       "182      1            10            7    JFK  ATL           610        0.0\n",
+       "183      1            10            7    JFK  SEA          1615        0.0\n",
+       "184      1            10            7    MSP  DTW           625        1.0"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "required=required.fillna({'ARR_DEL15':1})\n",
+    "required.iloc[177:185]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "standard-uniform",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>ORIGIN</th>\n",
+       "      <th>DEST</th>\n",
+       "      <th>CRS_DEP_TIME</th>\n",
+       "      <th>ARR_DEL15</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>1905</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>1345</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>940</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>819</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>2300</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   MONTH  DAY_OF_MONTH  DAY_OF_WEEK ORIGIN DEST  CRS_DEP_TIME  ARR_DEL15\n",
+       "0      1             1            5    ATL  SEA          1905        0.0\n",
+       "1      1             1            5    DTW  MSP          1345        0.0\n",
+       "2      1             1            5    ATL  SEA           940        0.0\n",
+       "3      1             1            5    SEA  MSP           819        0.0\n",
+       "4      1             1            5    SEA  DTW          2300        0.0"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "required.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "terminal-ridge",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>ORIGIN</th>\n",
+       "      <th>DEST</th>\n",
+       "      <th>CRS_DEP_TIME</th>\n",
+       "      <th>ARR_DEL15</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>19</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>13</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>9</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>8</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>23</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   MONTH  DAY_OF_MONTH  DAY_OF_WEEK ORIGIN DEST  CRS_DEP_TIME  ARR_DEL15\n",
+       "0      1             1            5    ATL  SEA            19        0.0\n",
+       "1      1             1            5    DTW  MSP            13        0.0\n",
+       "2      1             1            5    ATL  SEA             9        0.0\n",
+       "3      1             1            5    SEA  MSP             8        0.0\n",
+       "4      1             1            5    SEA  DTW            23        0.0"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import math\n",
+    "for index,row in required.iterrows():\n",
+    "    required.loc[index,'CRS_DEP_TIME']=math.floor(row['CRS_DEP_TIME']/100)\n",
+    "required.head()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "nominated-cradle",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>ORIGIN</th>\n",
+       "      <th>DEST</th>\n",
+       "      <th>CRS_DEP_TIME</th>\n",
+       "      <th>ARR_DEL15</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>19</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>13</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>9</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>8</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>23</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   MONTH  DAY_OF_MONTH  DAY_OF_WEEK ORIGIN DEST  CRS_DEP_TIME  ARR_DEL15\n",
+       "0      1             1            5    ATL  SEA            19        0.0\n",
+       "1      1             1            5    DTW  MSP            13        0.0\n",
+       "2      1             1            5    ATL  SEA             9        0.0\n",
+       "3      1             1            5    SEA  MSP             8        0.0\n",
+       "4      1             1            5    SEA  DTW            23        0.0"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "required.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "interim-protocol",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>ORIGIN</th>\n",
+       "      <th>DEST</th>\n",
+       "      <th>CRS_DEP_TIME</th>\n",
+       "      <th>ARR_DEL15</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>19</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>13</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>ATL</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>9</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>MSP</td>\n",
+       "      <td>8</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>SEA</td>\n",
+       "      <td>DTW</td>\n",
+       "      <td>23</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   MONTH  DAY_OF_MONTH  DAY_OF_WEEK ORIGIN DEST  CRS_DEP_TIME  ARR_DEL15\n",
+       "0      1             1            5    ATL  SEA            19        0.0\n",
+       "1      1             1            5    DTW  MSP            13        0.0\n",
+       "2      1             1            5    ATL  SEA             9        0.0\n",
+       "3      1             1            5    SEA  MSP             8        0.0\n",
+       "4      1             1            5    SEA  DTW            23        0.0"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "required.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "taken-office",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>CRS_DEP_TIME</th>\n",
+       "      <th>ARR_DEL15</th>\n",
+       "      <th>ORIGIN_ATL</th>\n",
+       "      <th>ORIGIN_DTW</th>\n",
+       "      <th>ORIGIN_JFK</th>\n",
+       "      <th>ORIGIN_MSP</th>\n",
+       "      <th>ORIGIN_SEA</th>\n",
+       "      <th>DEST_ATL</th>\n",
+       "      <th>DEST_DTW</th>\n",
+       "      <th>DEST_JFK</th>\n",
+       "      <th>DEST_MSP</th>\n",
+       "      <th>DEST_SEA</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>19</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>13</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>9</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>8</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>23</td>\n",
+       "      <td>0.0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   MONTH  DAY_OF_MONTH  DAY_OF_WEEK  CRS_DEP_TIME  ARR_DEL15  ORIGIN_ATL  \\\n",
+       "0      1             1            5            19        0.0           1   \n",
+       "1      1             1            5            13        0.0           0   \n",
+       "2      1             1            5             9        0.0           1   \n",
+       "3      1             1            5             8        0.0           0   \n",
+       "4      1             1            5            23        0.0           0   \n",
+       "\n",
+       "   ORIGIN_DTW  ORIGIN_JFK  ORIGIN_MSP  ORIGIN_SEA  DEST_ATL  DEST_DTW  \\\n",
+       "0           0           0           0           0         0         0   \n",
+       "1           1           0           0           0         0         0   \n",
+       "2           0           0           0           0         0         0   \n",
+       "3           0           0           0           1         0         0   \n",
+       "4           0           0           0           1         0         1   \n",
+       "\n",
+       "   DEST_JFK  DEST_MSP  DEST_SEA  \n",
+       "0         0         0         1  \n",
+       "1         0         1         0  \n",
+       "2         0         0         1  \n",
+       "3         0         1         0  \n",
+       "4         0         0         0  "
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "required=pd.get_dummies(required, columns=['ORIGIN','DEST'])\n",
+    "required.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "unlikely-project",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.model_selection import train_test_split\n",
+    "train_x,test_x, train_y,test_y=train_test_split(required.drop('ARR_DEL15',axis=1),required['ARR_DEL15'],test_size=0.2)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "critical-interval",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(8984, 14)\n",
+      "(2247, 14)\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(train_x.shape)\n",
+    "print(test_x.shape)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "id": "direct-retailer",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(8984,)\n",
+      "(2247,)\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(train_y.shape)\n",
+    "print(test_y.shape)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "id": "appointed-brother",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "RandomForestClassifier(random_state=13)"
+      ]
+     },
+     "execution_count": 30,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from sklearn.ensemble import RandomForestClassifier\n",
+    "model=RandomForestClassifier(random_state=13)\n",
+    "model.fit(train_x,train_y)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "id": "sharing-murray",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.8593680462839342"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "predicted=model.predict(test_x)\n",
+    "model.score(test_x,test_y)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "id": "vocal-flour",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>MONTH</th>\n",
+       "      <th>DAY_OF_MONTH</th>\n",
+       "      <th>DAY_OF_WEEK</th>\n",
+       "      <th>CRS_DEP_TIME</th>\n",
+       "      <th>ORIGIN_ATL</th>\n",
+       "      <th>ORIGIN_DTW</th>\n",
+       "      <th>ORIGIN_JFK</th>\n",
+       "      <th>ORIGIN_MSP</th>\n",
+       "      <th>ORIGIN_SEA</th>\n",
+       "      <th>DEST_ATL</th>\n",
+       "      <th>DEST_DTW</th>\n",
+       "      <th>DEST_JFK</th>\n",
+       "      <th>DEST_MSP</th>\n",
+       "      <th>DEST_SEA</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>1027</th>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5613</th>\n",
+       "      <td>7</td>\n",
+       "      <td>10</td>\n",
+       "      <td>7</td>\n",
+       "      <td>6</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7669</th>\n",
+       "      <td>9</td>\n",
+       "      <td>5</td>\n",
+       "      <td>1</td>\n",
+       "      <td>6</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5890</th>\n",
+       "      <td>7</td>\n",
+       "      <td>19</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7142</th>\n",
+       "      <td>8</td>\n",
+       "      <td>17</td>\n",
+       "      <td>3</td>\n",
+       "      <td>15</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      MONTH  DAY_OF_MONTH  DAY_OF_WEEK  CRS_DEP_TIME  ORIGIN_ATL  ORIGIN_DTW  \\\n",
+       "1027      2             8            1             5           0           0   \n",
+       "5613      7            10            7             6           0           0   \n",
+       "7669      9             5            1             6           0           1   \n",
+       "5890      7            19            2             8           1           0   \n",
+       "7142      8            17            3            15           0           0   \n",
+       "\n",
+       "      ORIGIN_JFK  ORIGIN_MSP  ORIGIN_SEA  DEST_ATL  DEST_DTW  DEST_JFK  \\\n",
+       "1027           0           1           0         1         0         0   \n",
+       "5613           0           0           1         1         0         0   \n",
+       "7669           0           0           0         1         0         0   \n",
+       "5890           0           0           0         0         1         0   \n",
+       "7142           0           1           0         0         0         0   \n",
+       "\n",
+       "      DEST_MSP  DEST_SEA  \n",
+       "1027         0         0  \n",
+       "5613         0         0  \n",
+       "7669         0         0  \n",
+       "5890         0         0  \n",
+       "7142         0         1  "
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "test_x.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "id": "baking-attack",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.metrics import roc_auc_score\n",
+    "probabilities=model.predict_proba(test_x)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "smooth-tattoo",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.6683107545623643"
+      ]
+     },
+     "execution_count": 34,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "roc_auc_score(test_y,probabilities[:,1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "id": "appointed-calculator",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([[1893,   35],\n",
+       "       [ 281,   38]], dtype=int64)"
+      ]
+     },
+     "execution_count": 35,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from sklearn.metrics import confusion_matrix\n",
+    "confusion_matrix(test_y,predicted)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "id": "expensive-fisher",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "1.0"
+      ]
+     },
+     "execution_count": 36,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from sklearn.metrics import precision_score\n",
+    "train_predictions=model.predict(train_x)\n",
+    "precision_score(train_y,train_predictions)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "id": "pleased-carbon",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "1.0"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from sklearn.metrics import recall_score\n",
+    "recall_score(train_y,train_predictions)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "id": "solid-client",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%matplotlib inline\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "sns.set()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "id": "dated-vegetable",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Text(0, 0.5, 'True Positive Rate')"
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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eXl3nXr9cnt+fv59T83Mib423/7ZI488Qo8ePXj77beNXWKz09fmXbt2kZ+fT3R0NP/1X/9V335zpq/NPj4+BAYGEhISAkBkZCTnzp0zep3NSV+br169iqOjI6GhoQDExMRw/Phxo9dpLIY6fllsIISFhXHkyBGKioqorq4mNja2vk8VwN/fH0dHR06dOgXAtm3b7tpujvS1WavV8swzzxAREcHKlSvN/owI9Ld52bJl7N69m+3bt7N+/Xp8fX35+uuvTVjxw9PX5v79+1NUVMTly5cB2L9/P7179zZVuc1CX5sDAwPJyckhJSUFgH379tUHoiUy2PHroS9Lt2A7duxQpk2bpkyePFlZv369oiiK8tRTTynnzp1TFEVRLl26pERHRytTpkxRfve73ym1tbWmLLdZ/FqbY2Njle7duyvTp0+v/+/VV181ccUPT9/nfFtGRoZFjDJSFP1tTkxMVKKjo5WpU6cqv/nNb5SCggJTltss9LU5Pj5eiYqKUiIjI5XFixcr6enppiy32YwbN65+lJGhj1+yYpoQQgjAgruMhBBCNI0EghBCCEACQQghxM8kEIQQQgASCEIIIX5mZ+oChLite/fuBAcHo1L953tKnz59fvUGuq1bt7J7924+/fTTh97/xx9/zIYNG/Dz88PGxgatVou3tzdr1qyhU6dOTX6/3Nxc/vu//5tvvvmGjIwM1q5dy8cff3zXzx9WZmYmkyZNIjg4uP5nVVVVtG3blnfeeYcOHTr86uv/7//+jx49epj9FCaieUggiBblyy+/xMvLy2T7nzp1Kq+99lr943/84x/8/ve/Z+vWrU1+Lz8/v/qD/s2bN0lNTb3n583BycmJ7du31z9WFIW33nqLdevW8eGHH/7qa48dO0bXrl2brRZh3qTLSJiFLVu2MHfuXGbOnMm4cePue7dxbGwss2bNYvbs2cydO5cTJ04At+ZueuWVV5g9ezZRUVG88847jZ47fvjw4fUH8pycHJ555hmioqKIjIzks88+A27NHbRmzRqioqKYPXs2y5Yto7KykszMTPr3749Wq2XVqlWkp6fz5JNP1v9cp9MxZswYzp8/X7+/5cuX17ftk08+YdasWcyYMYOlS5c2evKy2tpa8vPzcXd3ByA1NZUnnniCmJgYxo0bx7PPPkttbS0bNmzgwoULrF27lj179lBXV8c777zDrFmzmD59Oq+88goVFRWN2qewDBIIokVZvHgxM2bMqP+vsLCQyspKNm/ezPr169m2bRvr1q3j/fffv+e1a9euZc2aNWzdupX//u//5tixYwC888479O7dm61bt7Jt2zaKi4v5+9//rrcWjUbDli1bGDp0KAAvvvgiQ4cOZefOnfzrX/9ix44d/PDDDyQmJnL8+HF27NjB1q1b6dChA1euXKl/H1tbW9566y06duzI559/Xv9zlUpFdHQ03333HQClpaUkJCQQFRXFtm3buHr1Kps3b2b79u2MGTOGVatW3bfOmpoaZsyYQVRUFGFhYcyaNYtOnTrx4osvAremUZ45cyYbN24kNjaWzMxM4uPjWbhwIX369OHll19m0qRJrF+/HltbW7Zu3cqOHTvw9fXlgw8+aOQnJyyBdBmJFqWhLqP/9//+HwcOHCAtLY3Lly9TVVV1z3OmTZvG888/z5gxYxgxYgRLliwBbq2Udv78ebZs2QLcOoA25N///nf9/DBqtZrevXvz5ptvUlVVxenTp/nb3/4GgKurK7Nnz+bgwYOsXLkSW1tb5s6dy8iRIwkPDyc0NPS+q1z9UnR0NHPmzOGVV17h+++/Z9y4cbi6uhIXF8f58+eJjo4Gbs31X11dfd/3uLPL6NChQ7z00kuMGDECFxcXAF566SV++ukn/vrXv5KWlkZeXt59f3/x8fGUl5eTkJBQ335vb2+9bRCWQwJBtHg5OTnExMQwb948Bg4cyJQpU4iLi7vnecuXL2fOnDkcPnyYrVu3sn79erZu3YpOp+Ojjz6iS5cuAJSVlTU4sd8vryHcVlFRcc+UwzqdDo1Gg5ubG9u3b+f06dMcPXqU3/72tyxatKhRF2r9/f3p1asX8fHxbN26lVdffbX+vZ966qn6mVnr6uoatQzmqFGjeOKJJ/jd737Hjz/+iKurK7/73e/QarVEREQwduxYsrOz7zt9sk6n49VXX2XMmDEAVFZWUltbq3efwnJIl5Fo8S5cuICXlxdLly5l1KhR9WGg1Wrrn6PRaBg/fjxVVVUsWLCANWvWkJycjEajYeTIkXzxxRcoikJdXR3PPvss//znP5tUQ+vWrenbt2/9Wr7l5eVs27aNsLAw4uLiePzxx+nfvz8vvPACM2fOrJ9p9DZbW1vUavV933vevHn89a9/paamhoEDBwIwcuRItmzZUt+H/9FHH/Hyyy83qtbf/OY3uLm58b//+78AHD58mOeee46pU6diY2PD2bNn6393tra29ddTRo4cyYYNG6irq0On07F69Wq9F6WFZZEzBNHijRgxgi1btjBlyhRatWpFaGgoXl5e3Lhxo/45dnZ2vPrqq7z44ovY2dlhY2PDO++8g4ODAytXruTtt98mKioKtVpNWFgYTz31VJPr+OCDD/jjH//I1q1bqaurq7+IrNPpOHjwIJGRkTg7O+Pu7s6bb75512u7deuGra0tc+bMYd26dXdtGz9+PG+88UZ9FxfA3Llzyc3NZd68edjY2NCuXbtGL3Jjb2/P6tWreeqpp5g7dy7Lly/nueeew93dnVatWjF48GDS09MBGDduHH/6059Qq9UsXbqUP/3pT8yaNQutVkvPnj155ZVXmvx7EuZLZjsVQggBSJeREEKIn0kgCCGEACQQhBBC/EwCQQghBCCBIIQQ4mcSCEIIIQAJBCGEED+TQBBCCAHA/w8MUDc/0W0mfgAAAABJRU5ErkJggg==\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "from sklearn.metrics import roc_curve\n",
+    "fpr,tpr, _ =roc_curve(test_y,probabilities[:,1])\n",
+    "plt.plot(fpr,tpr)\n",
+    "plt.plot([0,1],[0,1],color='grey',lw=1,linestyle='--')\n",
+    "plt.xlabel('False Positive Rate')\n",
+    "plt.ylabel('True Positive Rate')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 41,
+   "id": "hybrid-lucas",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def predict_delay(departure_date_time,origin,destination):\n",
+    "    from datetime import datetime\n",
+    "    try:\n",
+    "        departure_date_time_parsed=datetime.strptime(departure_date_time,'%d/%m/%Y %H:%M:%S')\n",
+    "    except ValueError as e:\n",
+    "        return 'Error parsing date/time-{}'.format(e)\n",
+    "    month = departure_date_time_parsed.month\n",
+    "    day = departure_date_time_parsed.day\n",
+    "    day_of_week=departure_date_time_parsed.isoweekday()\n",
+    "    hour=departure_date_time_parsed.hour\n",
+    "    origin=origin.upper()\n",
+    "    destination=destination.upper()\n",
+    "    input=[{'MONTH':month,\n",
+    "          'DAY':day,\n",
+    "          'DAY_OF_WEEK':day_of_week,\n",
+    "          'CRS_DEP_TIME':hour,\n",
+    "          'ORIGIN_ATL':1 if origin =='ATL'else 0,\n",
+    "          'ORIGIN_DTW':1 if origin =='DTW'else 0,\n",
+    "          'ORIGIN_JFK':1 if origin =='JFK'else 0,\n",
+    "          'ORIGIN_MSP':1 if origin =='MSP'else 0,\n",
+    "          'ORIGIN_SEA':1 if origin =='SEA'else 0,\n",
+    "          'DEST_ATL':1 if destination =='ATL'else 0,\n",
+    "          'DEST_DTW':1 if destination =='DTW'else 0,\n",
+    "          'DEST_JFK':1 if destination =='JFK'else 0,\n",
+    "          'DEST_MSP':1 if destination =='MSP'else 0,\n",
+    "          'DEST_SEA':1 if destination =='SEA'else 0 }]\n",
+    "    return model.predict_proba(pd.DataFrame(input))[0][0]\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "id": "alpha-vessel",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.79"
+      ]
+     },
+     "execution_count": 42,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "predict_delay('1/10/2018 21:45:00','JFK','ATL')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "humanitarian-waterproof",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "atomic-norman",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.8"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
